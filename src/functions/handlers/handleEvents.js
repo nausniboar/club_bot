@@ -1,6 +1,6 @@
-const fs = require("fs");
+import * as fs from 'fs';
 
-module.exports = (client) => {
+export default (client) => {
   client.handleEvents = async() => {
     const eventFolders = fs.readdirSync("./src/events");
     for (const folder of eventFolders) {
@@ -11,7 +11,7 @@ module.exports = (client) => {
           // loop over all event files found in client directory
           for(const file of eventFiles) {
             // import event file
-            const event = await import(`../../events/${folder}/${file}`)
+            const {default: event} = await import(`../../events/${folder}/${file}`)
             // if event is a "once" event, give it to our client with the "once" function; otherwise is an "on" event
             // also on/once need callback functions to do once event happens, so we pass in our event.execute that we've written
             if(event.once)
