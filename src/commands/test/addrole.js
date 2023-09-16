@@ -10,7 +10,8 @@ export default {
       .setRequired(true)
     ),
   async execute (interaction, client) {
-    const addedRole = interaction.options._hoistedOptions[0].role;
+    //const addedRole = interaction.options._hoistedOptions[0].role;
+    const addedRole = interaction.options.getRole('newrole');
     //console.log(addedRole);
     interaction.member.roles.add(addedRole);
     await interaction.reply({

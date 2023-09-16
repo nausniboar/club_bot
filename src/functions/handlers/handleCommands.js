@@ -4,7 +4,8 @@ export default (client) => {
   client.handleCommands = async() => {
     const commandFolders = fs.readdirSync("./src/commands");
     for (const folder of commandFolders) {
-      const commandFiles = fs.readdirSync(`./src/commands/${folder}`).filter((file) => file.endsWith(".js"));
+      const commandFiles = fs.readdirSync(`./src/commands/${folder}`)
+        .filter((file) => file.endsWith(".js"));
       //const { commands, commandsArray } = client;
       for (const file of commandFiles) {
         // importing commands as objects

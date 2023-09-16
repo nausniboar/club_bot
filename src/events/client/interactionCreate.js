@@ -1,6 +1,9 @@
 export default {
   name: 'interactionCreate',
   once: false,
+  /**
+   * @param {Client} client 
+   */
   async execute (interaction, client) {
     switch(interaction.type) {
       // Interaction type 1: Ping

@@ -21,10 +21,13 @@ const client = new Client({
   ]
 });
 
-const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN);
+client.rest = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN);
 
 client.commands = new Collection();
 client.commandsArray = [];
+client.buttons = [];
+
+client.openCommands = [];
 
 const functionFolders = fs.readdirSync("./src/functions");
 for (const folder of functionFolders) {
@@ -38,7 +41,7 @@ for (const folder of functionFolders) {
 async function registerCommands() {
   try {
     console.log('Started refreshing application (/) commands.');
-    await rest.put(Routes.applicationCommands(process.env.DISCORD_BOT_ID), { body: client.commandsArray });
+    await client.rest.put(Routes.applicationCommands(process.env.DISCORD_BOT_ID), { body: client.commandsArray });
     console.log('Successfully reloaded application (/) commands.');
   } catch (error) {
     console.error(error);
@@ -46,6 +49,7 @@ async function registerCommands() {
 }
 
 await client.handleEvents();
+await client.handleComponents();
 client.handleCommands()
 //  .then(() => registerCommands())
 
