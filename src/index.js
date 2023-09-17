@@ -1,12 +1,10 @@
 import {
-  Client, IntentsBitField, Partials, REST, Routes, Collection,
-  ActionRowBuilder, StringSelectMenuBuilder, ModalBuilder,
-  TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle,
-  SlashCommandBuilder
+  Client, IntentsBitField, Partials, REST, Routes, Collection
 } from 'discord.js';
 import * as fs from 'fs';
 import { config } from 'dotenv';
 config();
+
 
 const client = new Client({
   intents: [
@@ -20,6 +18,8 @@ const client = new Client({
     Partials.Channel
   ]
 });
+
+
 
 client.rest = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN);
 
@@ -49,8 +49,8 @@ async function registerCommands() {
 }
 
 await client.handleEvents();
-await client.handleComponents();
+//await client.handleComponents();
 client.handleCommands()
-//  .then(() => registerCommands())
+  .then(() => registerCommands())
 
 client.login(process.env.DISCORD_BOT_TOKEN);
