@@ -1,18 +1,23 @@
 import { SlashCommandBuilder, ComponentType, Component } from "discord.js";
 
-// This command is a two-phase test command. 
+/*function testFunc(option) {
+  console.log("inside test function!!!!!!!!!!!!!")
+  option
+    .setName('limit')
+    .setDescription('maximum number to count to')
+    .setRequired(true)
+  console.log(option);
+  return option;
+}*/
+
 export default {
   data: new SlashCommandBuilder()
     .setName('countto')
     .setDescription('Prompts a given user to count to the desired number for a special prize.')
     .addIntegerOption((option) => option
-      .setName('max')
+      .setName('limit')
       .setDescription('maximum number to count to')
       .setRequired(true)
-    )
-    .addUserOption((option) => option
-      .setName('user')
-      .setDescription('selects a user')
     ),
   
   /**
@@ -21,60 +26,44 @@ export default {
    */
   async execute (interaction, client) {
     // Sending the response to the command
-    const reply = await interaction.reply({
-      content: `If you count to a number, you will receive a special gift.`
+    await interaction.reply({
+      content: `If you count to a number, starting with 1, you will receive a special gift.`
     })
-    //const msg = await reply.fetch();
-    
-
-    const max = interaction.options.getInteger('max');
-    console.log(interaction.user);
-    console.log(max);
-    
-    const recursive = (interaction, max, iter) => {
-      console.log(`Max: ${max}, iter: ${iter}`)
-      const filter = (msg) => {
-        return msg.author.id === interaction.user.id 
-      }
-      const collector = interaction.channel.createMessageCollector({filter})
-
-      collector.on('collect', (message) => {
-        console.log("here");
-        let succeed = false;
-        let num = parseInt(message.content);
-        console.log("here 2");
-        let str = "";
-        if (num === null) {
-          str = message.content;
-        } else if (num === NaN) {
-          str = "Uh oh, you didn't enter a parseable number. Game over."
-        } else if(num == max) {
-          str = "Yay! You win!"
-        } else if(num != iter) {
-          str = "Whoops! You entered the wrong number. Game over."
-        } else if(num == iter) {
-          str = `Next number: ${iter+1}`
-          succeed = true;
-        } else {
-          str = "Else"
-        }
-        interaction.editReply({
-          content: str
-        })
-        if(succeed) recursive(interaction, max, iter+1);
-      })
-      collector.on('end', (collected) => {
-        console.log("Ended");
-        if(interaction.options.getInteger('max') != iter) {
-          console.log("Time expired")
-          interaction.editReply({
-            content: "Took too long to reply, game over."
-          })
-        } else {
-          console.log("Time expired, but won")
-        }
-      })
+    const limit = interaction.options.getInteger('limit');
+    let iter = 1;
+    const filter = (msg) => {
+      return msg.author.id === interaction.user.id 
     }
-    recursive(interaction, max, 1)
+    const collector = interaction.channel.createMessageCollector({filter, max: limit});
+    collector.on('collect', (message) => {
+      let stop = true;
+      let num = parseInt(message.content);
+      console.log(`Iter: ${iter}, message: ${message}, num: ${num}`);
+      let str = "";
+      if (isNaN(num) || num === null) {
+        str = "Uh oh, you didn't enter a parseable number. Game over."
+      } else if(num == limit) {
+        str = "Yay! You win!"
+      } else if(num != iter) {
+        str = "Whoops! You entered the wrong number. Game over."
+      } else if(num == iter) {
+        str = `Next number: ${iter+1}`
+        iter++;
+        stop = false;
+      } else {
+        str = "Uncaught input."
+      }
+      console.log(`Str: ${str}, stop: ${stop}`)
+      interaction.editReply({
+        content: str
+      })
+      if(stop){
+        collector.stop();
+        console.log("Collector stopped.");
+      }
+    })
+    collector.on('end', (collected) => {
+      console.log("Ended");
+    })
   }
 }

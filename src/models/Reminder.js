@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 
-let testSchema = new Schema({
+let ReminderSchema = new Schema({
   GuildID: String,
   ChannelID: String,
   UserID: String,
@@ -8,4 +8,4 @@ let testSchema = new Schema({
   Message: String
 })
 
-export default model('reminder', testSchema);
+export default model('reminder', ReminderSchema);

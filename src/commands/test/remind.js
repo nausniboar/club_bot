@@ -1,5 +1,5 @@
 import { ApplicationCommandPermissionType, SlashCommandBuilder } from "discord.js";
-import Reminder from '../../Reminder.js'
+import Reminder from '../../models/Reminder.js'
 import { Model } from "mongoose";
 import { ChatInputCommandInteraction } from "discord.js";
 
@@ -20,7 +20,7 @@ export default {
 
   /**
    * @param {ChatInputCommandInteraction} interaction
-   * @param {Model} testSchema
+   * @param {Model} ReminderSchema
    */
   async execute(interaction) {
     console.log("here");

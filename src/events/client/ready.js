@@ -1,5 +1,5 @@
 import mongoose, { Query } from 'mongoose'
-import Reminder from '../../Reminder.js'
+import Reminder from '../../models/Reminder.js'
 
 export default {
   name: 'ready',
