@@ -117,7 +117,7 @@ export default {
 
     const collector = reply.createMessageComponentCollector({
       componentType: ComponentType.Button,
-      filter
+      filter, max: 1
     })
     collector.on('collect', (interaction2) => {
       interaction.editReply({
@@ -128,7 +128,7 @@ export default {
 
     const collector2 = reply.createMessageComponentCollector({
       componentType: ComponentType.StringSelect,
-      filter
+      filter, max: 1
     })
     collector2.on('collect', (interaction3) => {
       const bingusNum = interaction3.message.content.charAt(18);

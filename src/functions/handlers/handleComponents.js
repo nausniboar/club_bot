@@ -7,13 +7,11 @@ export default (client) => {
       const componentFiles = fs.readdirSync(`./src/components/${folder}`)
         .filter((file) => file.endsWith(".js"));
 
-      const { buttons } = client;
-
       switch(folder) {
         case "buttons":
           for(const file of componentFiles) {
-            const {default: button} = await import(`../../components/${folder}`);
-            buttons.set(button.data.name, button);
+            const {default: button} = await import(`../../components/${folder}/${file}`);
+            client.buttons.set(button.data.name, button);
           }
           break;
         
