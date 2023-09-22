@@ -42,7 +42,8 @@ let data = new SlashCommandBuilder()
 .setDescription('Play a little game of trivia. Optional category specifiers and optional users to play with.')
 .addIntegerOption((option) => option 
   .setName('number')
-  .setDescription('number of questions, max is 50')
+  .setDescription('number of questions, min is 1, max is 50')
+  .setMinValue(1)
   .setMaxValue(50)
   .setRequired(true)
 )
@@ -74,16 +75,14 @@ for(let i = 1; i <= numExtraUsers; i++) {
 
 function listUserString(users) {
   let msgStr = "";
-  if(users.length > 0) {
-    for(let i = users.length-2; i >= 0; i--) {
-      msgStr = `**${users[i].globalName}**, ${msgStr}`;
-    }
-    if(users.length == 2) msgStr = msgStr.substring(0, msgStr.length-2) + " "
-    if(users.length > 1) {
-      msgStr +="and ";
-    }
-    msgStr += ` with **${users[users.length-1].globalName}**`;
+  for(let i = users.length-2; i >= 0; i--) {
+    msgStr = `**${users[i].globalName}**, ${msgStr}`;
   }
+  if(users.length == 2) msgStr = msgStr.substring(0, msgStr.length-2) + " "
+  if(users.length > 1) {
+    msgStr +="and ";
+  }
+  msgStr += `**${users[users.length-1].globalName}**`;
   return msgStr;
 }
 
@@ -109,7 +108,7 @@ export default {
     }** started a **${
       interaction.options.getInteger('number')
     }-question** trivia game${
-      listUserString(users)
+      users.length > 0 ? ' with ' : ''}${listUserString(users)}
     }.\n`;
 
     console.log(chalk.bgYellow("data string"));
@@ -212,7 +211,7 @@ export default {
         // each trivia round instead of just printing
         users.push(interaction.user);
         this.sendTriviaEmbed(interaction.channel, parsedData['results'][0])
-        this.triviaGame(interaction.channel, users, parsedData['results']);
+        this.triviaGame(interaction.user, interaction.channel, users, parsedData['results']);
         break;
     }
   },
@@ -221,7 +220,7 @@ export default {
    * @param {Array.<User>} users 
    * @param {Array} results
    */
-  triviaGame(channel, users, results) {
+  triviaGame(cmdAuthor, channel, users, results) {
     const filter = (msg) => {
       for(const user of users) {
         if(msg.author.id === user.id) return true;
@@ -235,6 +234,11 @@ export default {
     const collector = channel.createMessageCollector({filter, time: 60000});
 
     collector.on('collect', (message) => {
+      if(message.content.toLowerCase() === 'stop' && message.author.id === cmdAuthor.id) {
+        channel.send("Stopping");
+        collector.stop();
+        answered.set(message.author.id, true);
+      }
       collector.resetTimer()
       //console.log(message.author);
       console.log(answered.get(message.author.id));
@@ -292,7 +296,7 @@ export default {
     })
     collector.on('end', (collected) => {
       let finalMsg = '';
-      if(results.length > 0) finalMsg = 'Timer ran out.'
+      if(results.length > 0) finalMsg = 'Timer ran out. '
       let scorePrint = [...scores.entries()]
       scorePrint.sort((a, b) => b[1] - a[1])
       const winners = users.filter(user => scores.get(user.id) == scorePrint[0][1])
