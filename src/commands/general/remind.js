@@ -50,7 +50,7 @@ export default {
       .then(() => console.log(`Reminder logged for ${date}, in ${minutes} minutes.`))
     setTimeout(() => {
       interaction.channel.send(message)
-      console.log(`Sent message ${message} in channel ${interaction.channelId}.`)
+      console.log(`Sent reminder message ${message} in channel ${interaction.channelId}.`)
       Reminder.deleteOne(data).then(console.log("Deleted message from database."));
     }, minutes * 60000)
   }

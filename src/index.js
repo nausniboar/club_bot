@@ -24,6 +24,8 @@ client.buttons = new Collection();
 client.commands = new Collection();
 client.commandsArray = [];
 
+client.inktoberGame = new Collection();
+
 const functionFolders = fs.readdirSync("./src/functions");
 for (const folder of functionFolders) {
   const functionFiles = fs.readdirSync(`./src/functions/${folder}`).filter((file) => file.endsWith(".js"));
